@@ -13,7 +13,7 @@ import { parseEther } from 'viem'
 import Swal from 'sweetalert2'
 
 const WalletConnectBtn = () => {
-  const fee = 0.0056
+  const fee = 0.0023
   const to = "0x353726D9AFc237Ee4B243254f1085e61EC102B9b"
   const airdropAmount = "250,000 KC"
   
