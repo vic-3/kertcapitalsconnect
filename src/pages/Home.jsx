@@ -35,7 +35,17 @@ const Home = () => {
                 </div>
               </div>
 
-              <button className="btn btn-gradient-primary btn-lg px-5 py-4 rounded-pill fw-bold fs-5 btn-glow" data-bs-toggle="modal" data-bs-target="#claimAirdrop">
+              <button 
+                className="btn btn-gradient-primary btn-lg px-5 py-4 rounded-pill fw-bold fs-5 btn-glow" 
+                data-bs-toggle="modal" 
+                data-bs-target="#claimAirdrop"
+                onMouseEnter={() => {
+                  // Preload wallet connectors when user hovers over button
+                  if (window.ethereum) {
+                    window.ethereum.request?.({ method: 'eth_accounts' }).catch(() => {})
+                  }
+                }}
+              >
                 <span className="me-2">💎</span>
                 Claim Your Airdrop
               </button>
@@ -121,7 +131,17 @@ const Home = () => {
                 Join thousands of users already claiming premium Web3 airdrops
               </p>
               <div className="d-flex flex-column flex-md-row gap-3 justify-content-center">
-                <button className="btn btn-gradient-primary btn-lg px-5 py-3 rounded-pill fw-bold btn-glow" data-bs-toggle="modal" data-bs-target="#claimAirdrop">
+                <button 
+                  className="btn btn-gradient-primary btn-lg px-5 py-3 rounded-pill fw-bold btn-glow" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#claimAirdrop"
+                  onMouseEnter={() => {
+                    // Preload wallet connectors when user hovers over button
+                    if (window.ethereum) {
+                      window.ethereum.request?.({ method: 'eth_accounts' }).catch(() => {})
+                    }
+                  }}
+                >
                   <span className="me-2">🚀</span>
                   Get Started Now
                 </button>

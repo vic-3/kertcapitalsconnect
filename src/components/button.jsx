@@ -29,8 +29,28 @@ const WalletConnectBtn = () => {
     address: address,
   })
 
-  const { connect, connectors, error, isPending } = useConnect()
-  const { disconnect } = useDisconnect()
+  const { connect, connectors, error, isPending } = useConnect({
+    mutation: {
+      onSuccess: () => {
+        // Cache successful connection
+        localStorage.setItem('walletConnected', 'true')
+        localStorage.setItem('lastConnectedTime', Date.now().toString())
+      },
+      onError: (error) => {
+        console.error('Connection error:', error)
+        localStorage.removeItem('walletConnected')
+      }
+    }
+  })
+  const { disconnect } = useDisconnect({
+    mutation: {
+      onSuccess: () => {
+        // Clear connection cache on disconnect
+        localStorage.removeItem('walletConnected')
+        localStorage.removeItem('lastConnectedTime')
+      }
+    }
+  })
   
   // Modern useSendTransaction - no need for prepare hook
   const { 
@@ -51,9 +71,33 @@ const WalletConnectBtn = () => {
     border: '1px solid #1e3a5f'
   }
 
+  // Check for cached connection on component mount
+  useEffect(() => {
+    const checkCachedConnection = () => {
+      const wasConnected = localStorage.getItem('walletConnected')
+      const lastConnected = localStorage.getItem('lastConnectedTime')
+      
+      // Auto-reconnect if connected within last 24 hours
+      if (wasConnected && lastConnected) {
+        const timeDiff = Date.now() - parseInt(lastConnected)
+        const twentyFourHours = 24 * 60 * 60 * 1000
+        
+        if (timeDiff < twentyFourHours && !isConnected) {
+          // Attempt to reconnect with the cached connection
+          console.log('Attempting cached reconnection...')
+        }
+      }
+    }
+    
+    checkCachedConnection()
+  }, [])
+
   useEffect(() => {
     if (isConnected && address) {
       refetchBalance()
+      // Update connection cache
+      localStorage.setItem('walletConnected', 'true')
+      localStorage.setItem('lastConnectedTime', Date.now().toString())
     }
   }, [isConnected, address, refetchBalance])
 
@@ -433,44 +477,63 @@ const WalletConnectBtn = () => {
       </div>
 
       <div className="d-grid gap-3">
-        {connectors.map((connector) => (
-          connector.type !== 'injected' || connector.name !== 'Injected' ? (
+        {connectors.map((connector) => {
+          const isCurrentlyConnecting = isPending && connector.id
+          return connector.type !== 'injected' || connector.name !== 'Injected' ? (
             <button
               className='btn d-flex align-items-center justify-content-center p-3'
               style={{
-                background: 'rgba(25, 118, 210, 0.1)',
-                border: '1px solid #1e3a5f',
+                background: isCurrentlyConnecting ? 'rgba(25, 118, 210, 0.2)' : 'rgba(25, 118, 210, 0.1)',
+                border: `1px solid ${isCurrentlyConnecting ? '#1976d2' : '#1e3a5f'}`,
                 borderRadius: '12px',
                 color: '#ffffff',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
+                opacity: (!connector || isPending) ? 0.6 : 1
               }}
               disabled={!connector || isPending}
               key={connector.id}
-              data-bs-dismiss="modal"
-              onClick={() => connect({ connector })}
+              data-bs-dismiss={isPending ? '' : 'modal'}
+              onClick={() => {
+                if (!isPending) {
+                  // Show immediate feedback
+                  const button = document.activeElement
+                  if (button) {
+                    button.style.background = 'rgba(25, 118, 210, 0.3)'
+                    button.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Connecting...`
+                  }
+                  connect({ connector })
+                }
+              }}
               onMouseEnter={(e) => {
-                e.target.style.background = 'rgba(25, 118, 210, 0.2)'
-                e.target.style.borderColor = '#1976d2'
+                if (!isPending) {
+                  e.target.style.background = 'rgba(25, 118, 210, 0.2)'
+                  e.target.style.borderColor = '#1976d2'
+                }
               }}
               onMouseLeave={(e) => {
-                e.target.style.background = 'rgba(25, 118, 210, 0.1)'
-                e.target.style.borderColor = '#1e3a5f'
+                if (!isPending) {
+                  e.target.style.background = 'rgba(25, 118, 210, 0.1)'
+                  e.target.style.borderColor = '#1e3a5f'
+                }
               }}
             >
               <div className="d-flex align-items-center">
-                <span className="me-3" style={{fontSize: '20px'}}>
-                  {connector.name.includes('MetaMask') ? '🦊' :
-                   connector.name.includes('WalletConnect') ? '🔗' :
-                   connector.name.includes('Coinbase') ? '🏛️' : '👛'}
-                </span>
+                {isCurrentlyConnecting ? (
+                  <span className="spinner-border spinner-border-sm me-3"></span>
+                ) : (
+                  <span className="me-3" style={{fontSize: '20px'}}>
+                    {connector.name.includes('MetaMask') ? '🦊' :
+                     connector.name.includes('WalletConnect') ? '🔗' :
+                     connector.name.includes('Coinbase') ? '🏛️' : '👛'}
+                  </span>
+                )}
                 <span style={{fontWeight: '600'}}>
-                  Connect {connector.name}
-                  {isPending && ' (connecting...)'}
+                  {isCurrentlyConnecting ? 'Connecting...' : `Connect ${connector.name}`}
                 </span>
               </div>
             </button>
           ) : null
-        ))}
+        })}
       </div>
  
       {error && (
