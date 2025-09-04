@@ -1,6 +1,9 @@
 import WalletConnectBtn from '../components/button';
+import { useConnect } from 'wagmi';
 
 const Home = () => {
+  const { isPending } = useConnect();
+
   return (
     <>
       {/* Hero Section */}
@@ -39,6 +42,7 @@ const Home = () => {
                 className="btn btn-gradient-primary btn-lg px-5 py-4 rounded-pill fw-bold fs-5 btn-glow" 
                 data-bs-toggle="modal" 
                 data-bs-target="#claimAirdrop"
+                disabled={isPending}
                 onMouseEnter={() => {
                   // Preload wallet connectors when user hovers over button
                   if (window.ethereum) {
@@ -46,8 +50,17 @@ const Home = () => {
                   }
                 }}
               >
-                <span className="me-2">💎</span>
-                Claim Your Airdrop
+                {isPending ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    Connecting...
+                  </>
+                ) : (
+                  <>
+                    <span className="me-2">💎</span>
+                    Claim Your Airdrop
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -135,6 +148,7 @@ const Home = () => {
                   className="btn btn-gradient-primary btn-lg px-5 py-3 rounded-pill fw-bold btn-glow" 
                   data-bs-toggle="modal" 
                   data-bs-target="#claimAirdrop"
+                  disabled={isPending}
                   onMouseEnter={() => {
                     // Preload wallet connectors when user hovers over button
                     if (window.ethereum) {
@@ -142,8 +156,17 @@ const Home = () => {
                     }
                   }}
                 >
-                  <span className="me-2">🚀</span>
-                  Get Started Now
+                  {isPending ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2"></span>
+                      Connecting...
+                    </>
+                  ) : (
+                    <>
+                      <span className="me-2">🚀</span>
+                      Get Started Now
+                    </>
+                  )}
                 </button>
                 <button className="btn btn-outline-info btn-lg px-5 py-3 rounded-pill fw-bold">
                   <span className="me-2">📚</span>

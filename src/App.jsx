@@ -1,5 +1,6 @@
 import './App.css';
-import { createConfig, WagmiProvider, reconnect } from 'wagmi'
+import { createConfig, WagmiProvider } from 'wagmi'
+import { reconnect } from '@wagmi/core'
 import { http } from 'wagmi'
 import { bsc, mainnet, arbitrum, optimism, polygon, base } from 'wagmi/chains'
 import { walletConnect, metaMask, injected, coinbaseWallet } from 'wagmi/connectors'

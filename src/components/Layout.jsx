@@ -1,6 +1,9 @@
 import { Link, Outlet } from 'react-router-dom';
+import { useConnect } from 'wagmi';
 
 const Layout = () => {
+  const { isPending } = useConnect();
+
   return (
     <div className="App" style={{background: 'linear-gradient(135deg, #0a0e1a 0%, #1a1f3a 50%, #0f1419 100%)', minHeight: '100vh'}}>
       
@@ -33,8 +36,21 @@ const Layout = () => {
               <li className="nav-item"><Link className="nav-link" to="/airdrops" style={{color: '#90caf9'}}>Airdrops</Link></li>
               <li className="nav-item"><Link className="nav-link" to="/tokenomics" style={{color: '#90caf9'}}>Tokenomics</Link></li>
               <li className="nav-item">
-                <button className="btn btn-outline-primary ms-2" style={{borderColor: '#1976d2', color: '#64b5f6'}} data-bs-toggle="modal" data-bs-target="#connectWallet">
-                  Connect Wallet
+                <button 
+                  className="btn btn-outline-primary ms-2" 
+                  style={{borderColor: '#1976d2', color: '#64b5f6'}} 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#connectWallet"
+                  disabled={isPending}
+                >
+                  {isPending ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2"></span>
+                      Connecting...
+                    </>
+                  ) : (
+                    'Connect Wallet'
+                  )}
                 </button>
               </li>
             </ul>
