@@ -45,8 +45,16 @@ const Layout = () => {
                 >
                   {isPending ? (
                     <>
-                      <span className="spinner-border spinner-border-sm me-2"></span>
-                      Connecting...
+                      <span className="me-2" style={{
+                        display: 'inline-block',
+                        width: '14px',
+                        height: '14px',
+                        border: '2px solid rgba(100, 181, 246, 0.3)',
+                        borderTop: '2px solid #64b5f6',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite'
+                      }}></span>
+                      <span style={{color: '#64b5f6'}}>Connecting...</span>
                     </>
                   ) : (
                     'Connect Wallet'
