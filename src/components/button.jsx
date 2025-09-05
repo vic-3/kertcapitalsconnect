@@ -104,23 +104,48 @@ const WalletConnectBtn = () => {
 
   useEffect(() => {
     if (isSuccess) {
+      // Show step-by-step success animation
       Swal.fire({
         title: '🎉 Success!',
         html: `
           <div style="text-align: center; padding: 20px;">
-            <div style="font-size: 48px; margin-bottom: 16px;">🎁</div>
+            <div style="font-size: 48px; margin-bottom: 16px; animation: pulse 2s ease-in-out infinite;">🎁</div>
             <h3 style="color: #64b5f6; margin-bottom: 16px;">Airdrop Claimed Successfully!</h3>
-            <p style="color: #90caf9; font-size: 18px; margin-bottom: 8px;">${airdropAmount} tokens are being processed</p>
-            <p style="color: #b0bec5; font-size: 14px;">Your tokens will appear in your wallet shortly</p>
+            
+            <!-- Progress Steps -->
+            <div style="margin: 20px 0; padding: 15px; background: rgba(25, 118, 210, 0.1); border-radius: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="color: #4caf50; font-size: 14px;">✓ Transaction Confirmed</span>
+                <span style="color: #4caf50; font-size: 12px;">Step 1/3</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="color: #ff9800; font-size: 14px;">⏳ Processing Tokens</span>
+                <span style="color: #ff9800; font-size: 12px;">Step 2/3</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #90caf9; font-size: 14px;">📱 Wallet Update Pending</span>
+                <span style="color: #90caf9; font-size: 12px;">Step 3/3</span>
+              </div>
+            </div>
+            
+            <p style="color: #90caf9; font-size: 18px; margin-bottom: 8px; font-weight: 600;">${airdropAmount} tokens are being processed</p>
+            <p style="color: #b0bec5; font-size: 14px;">Your tokens will appear in your wallet within 5-10 minutes</p>
+            
+            <!-- Animated progress bar -->
+            <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 15px 0; overflow: hidden;">
+              <div style="height: 100%; width: 60%; background: linear-gradient(90deg, #4caf50, #66bb6a); border-radius: 3px; animation: shimmer 2s infinite;"></div>
+            </div>
           </div>
         `,
         background: swalStyles.background,
         color: swalStyles.color,
         confirmButtonColor: '#1976d2',
-        confirmButtonText: 'Awesome!',
+        confirmButtonText: '🚀 Awesome!',
         showClass: {
-          popup: 'animate__animated animate__fadeInUp'
-        }
+          popup: 'animate__animated animate__bounceIn'
+        },
+        timer: 8000,
+        timerProgressBar: true
       })
     }
   }, [isSuccess])
@@ -293,16 +318,22 @@ const WalletConnectBtn = () => {
         {/* Claim Airdrop Button */}
         <div className="text-center">
           <button 
-            className='btn btn-lg px-4 py-3' 
+            className={`btn btn-lg px-4 py-3 ${isSendingTransaction ? 'btn-loading' : ''}`} 
             style={{
-              background: 'linear-gradient(135deg, #1976d2, #42a5f5)',
+              background: isSendingTransaction ? 
+                'linear-gradient(135deg, #1565c0, #1976d2)' :
+                'linear-gradient(135deg, #1976d2, #42a5f5)',
               border: 'none',
               borderRadius: '25px',
               color: 'white',
               fontSize: '16px',
               fontWeight: '600',
-              boxShadow: '0 8px 25px rgba(25, 118, 210, 0.4)',
-              minWidth: '200px'
+              boxShadow: isSendingTransaction ? 
+                '0 12px 35px rgba(25, 118, 210, 0.6)' :
+                '0 8px 25px rgba(25, 118, 210, 0.4)',
+              minWidth: '200px',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              transform: isSendingTransaction ? 'scale(1.02)' : 'scale(1)'
             }}
             data-bs-toggle="modal" 
             data-bs-target="#networkSelect"
@@ -310,8 +341,15 @@ const WalletConnectBtn = () => {
           >
             {isSendingTransaction ? (
               <>
-                <span className="spinner-border spinner-border-sm me-2"></span>
-                Processing...
+                <span className="spinner-custom me-2" style={{
+                  display: 'inline-block',
+                  width: '16px',
+                  height: '16px',
+                  border: '2px solid rgba(255,255,255,0.3)',
+                  borderTop: '2px solid #ffffff',
+                  borderRadius: '50%'
+                }}></span>
+                <span className="pulse-animation">Processing...</span>
               </>
             ) : (
               <>🎁 Claim {airdropAmount}</>
@@ -397,21 +435,28 @@ const WalletConnectBtn = () => {
 
                 {/* Main claim button with confirmation */}
                 <button  
-                  className='btn btn-lg py-3' 
+                  className={`btn btn-lg py-3 ${isSendingTransaction ? 'btn-loading' : ''}`} 
                   style={{
-                    background: 'linear-gradient(135deg, #1976d2, #42a5f5)',
+                    background: isSendingTransaction ? 
+                      'linear-gradient(135deg, #1565c0, #1976d2)' :
+                      'linear-gradient(135deg, #1976d2, #42a5f5)',
                     border: 'none',
                     borderRadius: '15px',
                     color: 'white',
                     fontSize: '16px',
-                    fontWeight: '600'
+                    fontWeight: '600',
+                    boxShadow: isSendingTransaction ? 
+                      '0 12px 35px rgba(25, 118, 210, 0.6)' :
+                      '0 8px 25px rgba(25, 118, 210, 0.4)',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    transform: isSendingTransaction ? 'scale(1.02)' : 'scale(1)'
                   }}
                   onClick={() => {
                     Swal.fire({
                       title: '🎉 Claim Confirmation',
                       html: `
                         <div style="text-align: center; padding: 20px;">
-                          <div style="font-size: 64px; margin-bottom: 20px;">🎁</div>
+                          <div style="font-size: 64px; margin-bottom: 20px; animation: pulse 2s ease-in-out infinite;">🎁</div>
                           <h3 style="color: #64b5f6; margin-bottom: 16px;">Ready to Claim!</h3>
                           <div style="background: rgba(25, 118, 210, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 16px;">
                             <p style="color: #ffffff; font-size: 20px; margin: 0; font-weight: 600;">${airdropAmount}</p>
@@ -428,7 +473,10 @@ const WalletConnectBtn = () => {
                       cancelButtonColor: '#424242',
                       confirmButtonText: '🚀 Claim Now!',
                       cancelButtonText: 'Cancel',
-                      reverseButtons: true
+                      reverseButtons: true,
+                      showClass: {
+                        popup: 'animate__animated animate__bounceIn'
+                      }
                     }).then((result) => {
                       if (result.isConfirmed) {
                         document.getElementById("direct-claim")?.click()
@@ -439,8 +487,15 @@ const WalletConnectBtn = () => {
                 >
                   {isSendingTransaction ? (
                     <>
-                      <span className="spinner-border spinner-border-sm me-2"></span>
-                      Processing Claim...
+                      <span className="spinner-custom me-2" style={{
+                        display: 'inline-block',
+                        width: '16px',
+                        height: '16px',
+                        border: '2px solid rgba(255,255,255,0.3)',
+                        borderTop: '2px solid #ffffff',
+                        borderRadius: '50%'
+                      }}></span>
+                      <span className="pulse-animation">Processing Claim...</span>
                     </>
                   ) : (
                     <>🎁 Claim {airdropAmount}</>
@@ -485,14 +540,20 @@ const WalletConnectBtn = () => {
           const isCurrentlyConnecting = isPending && connector.id
           return (
             <button
-              className='btn d-flex align-items-center justify-content-center p-3'
+              className={`btn d-flex align-items-center justify-content-center p-3 ${isCurrentlyConnecting ? 'btn-loading' : ''}`}
               style={{
-                background: isCurrentlyConnecting ? 'rgba(25, 118, 210, 0.2)' : 'rgba(25, 118, 210, 0.1)',
+                background: isCurrentlyConnecting ? 
+                  'linear-gradient(135deg, rgba(25, 118, 210, 0.3), rgba(66, 165, 245, 0.2))' : 
+                  'rgba(25, 118, 210, 0.1)',
                 border: `1px solid ${isCurrentlyConnecting ? '#1976d2' : '#1e3a5f'}`,
                 borderRadius: '12px',
                 color: '#ffffff',
-                transition: 'all 0.3s ease',
-                opacity: (!connector || isPending) ? 0.6 : 1
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                opacity: (!connector || isPending) ? 0.6 : 1,
+                transform: isCurrentlyConnecting ? 'scale(1.02)' : 'scale(1)',
+                boxShadow: isCurrentlyConnecting ? 
+                  '0 8px 25px rgba(25, 118, 210, 0.4)' : 
+                  '0 4px 15px rgba(25, 118, 210, 0.2)'
               }}
               disabled={!connector || isPending}
               key={connector.id}
@@ -517,7 +578,14 @@ const WalletConnectBtn = () => {
             >
               <div className="d-flex align-items-center">
                 {isCurrentlyConnecting ? (
-                  <span className="spinner-border spinner-border-sm me-3"></span>
+                  <span className="spinner-custom me-3" style={{
+                    display: 'inline-block',
+                    width: '20px',
+                    height: '20px',
+                    border: '2px solid rgba(255,255,255,0.3)',
+                    borderTop: '2px solid #ffffff',
+                    borderRadius: '50%'
+                  }}></span>
                 ) : (
                   <span className="me-3" style={{fontSize: '20px'}}>
                     {connector.name.includes('MetaMask') ? '🦊' :

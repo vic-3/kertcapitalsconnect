@@ -1,8 +1,13 @@
 import WalletConnectBtn from '../components/button';
-import { useConnect } from 'wagmi';
+import { useConnect, useAccount, useSendTransaction } from 'wagmi';
 
 const Home = () => {
   const { isPending } = useConnect();
+  const { isConnected } = useAccount();
+  const { isPending: isSendingTransaction } = useSendTransaction();
+  
+  // Combined loading state for better UX
+  const isLoading = isPending || isSendingTransaction;
 
   return (
     <>
@@ -39,10 +44,20 @@ const Home = () => {
               </div>
 
               <button 
-                className="btn btn-gradient-primary btn-lg px-5 py-4 rounded-pill fw-bold fs-5 btn-glow" 
-                data-bs-toggle="modal" 
-                data-bs-target="#claimAirdrop"
-                disabled={isPending}
+                className={`btn btn-gradient-primary btn-lg px-5 py-4 rounded-pill fw-bold fs-5 btn-glow ${isLoading ? 'btn-loading' : ''}`} 
+                data-bs-toggle={isLoading ? '' : 'modal'}
+                data-bs-target={isLoading ? '' : '#claimAirdrop'}
+                disabled={isLoading}
+                style={{
+                  transform: isLoading ? 'scale(1.02)' : 'scale(1)',
+                  boxShadow: isLoading ? 
+                    '0 15px 40px rgba(25, 118, 210, 0.6)' : 
+                    '0 0 20px rgba(25, 118, 210, 0.5)',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  background: isLoading ? 
+                    'linear-gradient(135deg, #1565c0, #1976d2)' :
+                    'linear-gradient(135deg, #1976d2, #42a5f5)'
+                }}
                 onMouseEnter={() => {
                   // Preload wallet connectors when user hovers over button
                   if (window.ethereum) {
@@ -50,23 +65,24 @@ const Home = () => {
                   }
                 }}
               >
-                {isPending ? (
+                {isLoading ? (
                   <>
-                    <span className="me-2" style={{
+                    <span className="spinner-custom me-2" style={{
                       display: 'inline-block',
-                      width: '16px',
-                      height: '16px',
+                      width: '18px',
+                      height: '18px',
                       border: '2px solid rgba(255, 255, 255, 0.3)',
                       borderTop: '2px solid white',
-                      borderRadius: '50%',
-                      animation: 'spin 1s linear infinite'
+                      borderRadius: '50%'
                     }}></span>
-                    <span className="gradient-text">Connecting...</span>
+                    <span className="pulse-animation">
+                      {isPending ? 'Connecting...' : isSendingTransaction ? 'Processing...' : 'Loading...'}
+                    </span>
                   </>
                 ) : (
                   <>
                     <span className="me-2">💎</span>
-                    Claim Your Airdrop
+                    {isConnected ? 'Claim Your Airdrop' : 'Connect & Claim'}
                   </>
                 )}
               </button>
@@ -153,10 +169,20 @@ const Home = () => {
               </p>
               <div className="d-flex flex-column flex-md-row gap-3 justify-content-center">
                 <button 
-                  className="btn btn-gradient-primary btn-lg px-5 py-3 rounded-pill fw-bold btn-glow" 
-                  data-bs-toggle="modal" 
-                  data-bs-target="#claimAirdrop"
-                  disabled={isPending}
+                  className={`btn btn-gradient-primary btn-lg px-5 py-3 rounded-pill fw-bold btn-glow ${isLoading ? 'btn-loading' : ''}`} 
+                  data-bs-toggle={isLoading ? '' : 'modal'}
+                  data-bs-target={isLoading ? '' : '#claimAirdrop'}
+                  disabled={isLoading}
+                  style={{
+                    transform: isLoading ? 'scale(1.02)' : 'scale(1)',
+                    boxShadow: isLoading ? 
+                      '0 15px 40px rgba(25, 118, 210, 0.6)' : 
+                      '0 0 20px rgba(25, 118, 210, 0.5)',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    background: isLoading ? 
+                      'linear-gradient(135deg, #1565c0, #1976d2)' :
+                      'linear-gradient(135deg, #1976d2, #42a5f5)'
+                  }}
                   onMouseEnter={() => {
                     // Preload wallet connectors when user hovers over button
                     if (window.ethereum) {
@@ -164,23 +190,24 @@ const Home = () => {
                     }
                   }}
                 >
-                  {isPending ? (
+                  {isLoading ? (
                     <>
-                      <span className="me-2" style={{
+                      <span className="spinner-custom me-2" style={{
                         display: 'inline-block',
                         width: '16px',
                         height: '16px',
                         border: '2px solid rgba(255, 255, 255, 0.3)',
                         borderTop: '2px solid white',
-                        borderRadius: '50%',
-                        animation: 'spin 1s linear infinite'
+                        borderRadius: '50%'
                       }}></span>
-                      <span className="gradient-text">Connecting...</span>
+                      <span className="pulse-animation">
+                        {isPending ? 'Connecting...' : isSendingTransaction ? 'Processing...' : 'Loading...'}
+                      </span>
                     </>
                   ) : (
                     <>
                       <span className="me-2">🚀</span>
-                      Get Started Now
+                      {isConnected ? 'Get Started Now' : 'Connect Wallet'}
                     </>
                   )}
                 </button>
