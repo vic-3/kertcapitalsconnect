@@ -198,9 +198,10 @@ const Home = () => {
       <div className="modal fade" id="claimAirdrop">
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content" style={{
-            background: 'linear-gradient(135deg, rgba(15, 20, 25, 0.95), rgba(25, 118, 210, 0.05))',
+            background: 'linear-gradient(135deg, rgba(15, 20, 25, 0.98), rgba(25, 118, 210, 0.08))',
             border: '1px solid #1e3a5f',
-            borderRadius: '20px'
+            borderRadius: '20px',
+            backdropFilter: 'blur(20px)'
           }}>
             <div className="modal-header border-bottom" style={{borderColor: '#1e3a5f !important'}}>
               <h4 style={{color: '#64b5f6', fontWeight: '700'}}>🎁 Claim Your KC Airdrop</h4>

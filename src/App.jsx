@@ -3,7 +3,7 @@ import { createConfig, WagmiProvider } from 'wagmi'
 import { reconnect } from '@wagmi/core'
 import { http } from 'wagmi'
 import { bsc, mainnet, arbitrum, optimism, polygon, base } from 'wagmi/chains'
-import { walletConnect, metaMask, injected, coinbaseWallet } from 'wagmi/connectors'
+import { walletConnect, metaMask, coinbaseWallet } from 'wagmi/connectors'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -32,7 +32,6 @@ const config = createConfig({
   chains: [mainnet, bsc, polygon, arbitrum, base, optimism],
   connectors: [
     metaMask({ dappMetadata: { name: 'KertCapitalsConnect' } }),
-    injected({ target: 'metaMask' }),
     coinbaseWallet({ 
       appName: 'KertCapitalsConnect',
       appLogoUrl: 'https://kertcapitalsconnect.com/icon.png'

@@ -66,9 +66,10 @@ const WalletConnectBtn = () => {
 
   // Custom SweetAlert2 theme
   const swalStyles = {
-    background: 'linear-gradient(135deg, rgba(15, 20, 25, 0.95), rgba(25, 118, 210, 0.1))',
+    background: 'linear-gradient(135deg, rgba(15, 20, 25, 0.98), rgba(25, 118, 210, 0.08))',
     color: '#ffffff',
-    border: '1px solid #1e3a5f'
+    border: '1px solid #1e3a5f',
+    backdropFilter: 'blur(20px)'
   }
 
   // Check for cached connection on component mount
@@ -322,9 +323,10 @@ const WalletConnectBtn = () => {
         <div className='modal fade' id='networkSelect'>
           <div className='modal-dialog modal-dialog-centered'>
             <div className='modal-content' style={{
-              background: 'linear-gradient(135deg, rgba(15, 20, 25, 0.95), rgba(25, 118, 210, 0.05))',
+              background: 'linear-gradient(135deg, rgba(15, 20, 25, 0.98), rgba(25, 118, 210, 0.08))',
               border: '1px solid #1e3a5f',
-              borderRadius: '20px'
+              borderRadius: '20px',
+              backdropFilter: 'blur(20px)'
             }}>
               <div className="modal-header border-bottom" style={{borderColor: '#1e3a5f !important'}}>
                 <h5 style={{color: '#64b5f6', fontWeight: '700'}}>
@@ -477,9 +479,11 @@ const WalletConnectBtn = () => {
       </div>
 
       <div className="d-grid gap-3">
-        {connectors.map((connector) => {
+        {connectors.filter(connector => 
+          connector.type !== 'injected' || connector.name !== 'Injected'
+        ).map((connector) => {
           const isCurrentlyConnecting = isPending && connector.id
-          return connector.type !== 'injected' || connector.name !== 'Injected' ? (
+          return (
             <button
               className='btn d-flex align-items-center justify-content-center p-3'
               style={{
@@ -495,12 +499,6 @@ const WalletConnectBtn = () => {
               data-bs-dismiss={isPending ? '' : 'modal'}
               onClick={() => {
                 if (!isPending) {
-                  // Show immediate feedback
-                  const button = document.activeElement
-                  if (button) {
-                    button.style.background = 'rgba(25, 118, 210, 0.3)'
-                    button.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Connecting...`
-                  }
                   connect({ connector })
                 }
               }}
@@ -532,7 +530,7 @@ const WalletConnectBtn = () => {
                 </span>
               </div>
             </button>
-          ) : null
+          )
         })}
       </div>
  
