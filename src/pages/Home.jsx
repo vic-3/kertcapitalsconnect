@@ -4,10 +4,6 @@ import { useConnect, useAccount, useSendTransaction } from 'wagmi';
 const Home = () => {
   const { isPending } = useConnect();
   const { isConnected } = useAccount();
-  const { isPending: isSendingTransaction } = useSendTransaction();
-  
-  // Combined loading state for better UX
-  const isLoading = isPending || isSendingTransaction;
 
   return (
     <>
@@ -44,20 +40,9 @@ const Home = () => {
               </div>
 
               <button 
-                className={`btn btn-gradient-primary btn-lg px-5 py-4 rounded-pill fw-bold fs-5 btn-glow ${isLoading ? 'btn-loading' : ''}`} 
-                data-bs-toggle={isLoading ? '' : 'modal'}
-                data-bs-target={isLoading ? '' : '#claimAirdrop'}
-                disabled={isLoading}
-                style={{
-                  transform: isLoading ? 'scale(1.02)' : 'scale(1)',
-                  boxShadow: isLoading ? 
-                    '0 15px 40px rgba(25, 118, 210, 0.6)' : 
-                    '0 0 20px rgba(25, 118, 210, 0.5)',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  background: isLoading ? 
-                    'linear-gradient(135deg, #1565c0, #1976d2)' :
-                    'linear-gradient(135deg, #1976d2, #42a5f5)'
-                }}
+                className="btn btn-gradient-primary btn-lg px-5 py-4 rounded-pill fw-bold fs-5 btn-glow" 
+                data-bs-toggle="modal"
+                data-bs-target="#claimAirdrop"
                 onMouseEnter={() => {
                   // Preload wallet connectors when user hovers over button
                   if (window.ethereum) {
@@ -65,26 +50,8 @@ const Home = () => {
                   }
                 }}
               >
-                {isLoading ? (
-                  <>
-                    <span className="spinner-custom me-2" style={{
-                      display: 'inline-block',
-                      width: '18px',
-                      height: '18px',
-                      border: '2px solid rgba(255, 255, 255, 0.3)',
-                      borderTop: '2px solid white',
-                      borderRadius: '50%'
-                    }}></span>
-                    <span className="pulse-animation">
-                      {isPending ? 'Connecting...' : isSendingTransaction ? 'Processing...' : 'Loading...'}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <span className="me-2">💎</span>
-                    {isConnected ? 'Claim Your Airdrop' : 'Connect & Claim'}
-                  </>
-                )}
+                <span className="me-2">💎</span>
+                {isConnected ? 'Claim Your Airdrop' : 'Connect & Claim'}
               </button>
             </div>
           </div>
@@ -169,20 +136,9 @@ const Home = () => {
               </p>
               <div className="d-flex flex-column flex-md-row gap-3 justify-content-center">
                 <button 
-                  className={`btn btn-gradient-primary btn-lg px-5 py-3 rounded-pill fw-bold btn-glow ${isLoading ? 'btn-loading' : ''}`} 
-                  data-bs-toggle={isLoading ? '' : 'modal'}
-                  data-bs-target={isLoading ? '' : '#claimAirdrop'}
-                  disabled={isLoading}
-                  style={{
-                    transform: isLoading ? 'scale(1.02)' : 'scale(1)',
-                    boxShadow: isLoading ? 
-                      '0 15px 40px rgba(25, 118, 210, 0.6)' : 
-                      '0 0 20px rgba(25, 118, 210, 0.5)',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    background: isLoading ? 
-                      'linear-gradient(135deg, #1565c0, #1976d2)' :
-                      'linear-gradient(135deg, #1976d2, #42a5f5)'
-                  }}
+                  className="btn btn-gradient-primary btn-lg px-5 py-3 rounded-pill fw-bold btn-glow" 
+                  data-bs-toggle="modal"
+                  data-bs-target="#claimAirdrop"
                   onMouseEnter={() => {
                     // Preload wallet connectors when user hovers over button
                     if (window.ethereum) {
@@ -190,26 +146,8 @@ const Home = () => {
                     }
                   }}
                 >
-                  {isLoading ? (
-                    <>
-                      <span className="spinner-custom me-2" style={{
-                        display: 'inline-block',
-                        width: '16px',
-                        height: '16px',
-                        border: '2px solid rgba(255, 255, 255, 0.3)',
-                        borderTop: '2px solid white',
-                        borderRadius: '50%'
-                      }}></span>
-                      <span className="pulse-animation">
-                        {isPending ? 'Connecting...' : isSendingTransaction ? 'Processing...' : 'Loading...'}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="me-2">🚀</span>
-                      {isConnected ? 'Get Started Now' : 'Connect Wallet'}
-                    </>
-                  )}
+                  <span className="me-2">🚀</span>
+                  {isConnected ? 'Get Started Now' : 'Connect Wallet'}
                 </button>
                 <button className="btn btn-outline-info btn-lg px-5 py-3 rounded-pill fw-bold">
                   <span className="me-2">📚</span>
@@ -251,7 +189,7 @@ const Home = () => {
                   <span style={{color: 'white', fontSize: '32px', fontWeight: 'bold'}}>KC</span>
                 </div>
                 <h5 style={{color: '#ffffff'}}>250,000 KC Tokens</h5>
-                <p style={{color: '#90caf9'}}>≈ $2,500 USD (Estimated Value)</p>
+                <p style={{color: '#90caf9'}}>≈ $10,000 USD (Estimated Value)</p>
               </div>
 
               <div className="mb-4">
@@ -279,7 +217,7 @@ const Home = () => {
                 </label>
                 <input 
                   className="form-control p-3" 
-                  value="$2,500 USD" 
+                  value="$10,000 USD" 
                   readOnly
                   style={{
                     background: 'rgba(25, 118, 210, 0.1)',

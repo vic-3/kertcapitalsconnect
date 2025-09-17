@@ -462,7 +462,7 @@ const WalletConnectBtn = () => {
                             <p style="color: #ffffff; font-size: 20px; margin: 0; font-weight: 600;">${airdropAmount}</p>
                             <p style="color: #90caf9; font-size: 14px; margin: 0;">KertCapitals Tokens</p>
                           </div>
-                          <p style="color: #b0bec5; font-size: 14px; margin-bottom: 8px;">Estimated value: $2,500 USD</p>
+                          <p style="color: #b0bec5; font-size: 14px; margin-bottom: 8px;">Estimated value: $10,000 USD</p>
                           <p style="color: #ff9800; font-size: 12px;">⚠️ Gas fees will be deducted from your wallet</p>
                         </div>
                       `,
