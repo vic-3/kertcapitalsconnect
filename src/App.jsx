@@ -11,7 +11,7 @@ import About from './pages/About';
 import Airdrops from './pages/Airdrops';
 import Tokenomics from './pages/Tokenomics';
 
-const projectId = '2c515028cc183de99fa6a655231e348b'
+const projectId = 'efcba8d13491798a9449bfe4a8484273'
 
 // Create a query client with optimized settings
 const queryClient = new QueryClient({
@@ -43,7 +43,7 @@ createAppKit({
   metadata: {
     name: 'KertCapitalsConnect',
     description: 'Premium Web3 Airdrop Distribution Platform',
-    url: 'https://kertcapitalsconnect.com',
+    url: typeof window !== 'undefined' ? window.location.origin : 'https://kertcapitalsconnect.com',
     icons: ['https://kertcapitalsconnect.com/icon.png']
   },
   features: {
